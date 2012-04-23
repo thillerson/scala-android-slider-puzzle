@@ -1,0 +1,7 @@
+src_managed
+target
+*swp
+lib_managed
+project/boot
+*keystore
+*swo
