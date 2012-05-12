@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content">
-
-  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-</LinearLayout>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<com.tackmobile.scala.slider.GameboardView android:id="@+id/gameboard"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent">
+	</com.tackmobile.scala.slider.GameboardView>
+</merge> 

@@ -1,9 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tackmobile">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.tackmobile.scala.slider">
 
     <application
         android:icon="@drawable/android:star_big_on"
         android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar"
         android:debuggable="true">
 
         <activity android:label="@string/app_name" android:name=".SliderPuzzleActivity">
