@@ -93,7 +93,6 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		try {
 			val touchedTile = v.asInstanceOf[GameTile]
 			if ( touchedTile.isEmpty || !touchedTile.isInRowOrColumnOf(emptyTile) ) {
-        Log.d("Me", touchedTile.toString)
 				return false
 			} else {
 				if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
@@ -252,7 +251,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
     var currentRect:Rect = null
 		var axialDelta:Float = 0f
 		if (tile.isToRightOf(emptyTile)) {
-			for ( i <- tile.coordinate.column to emptyTile.coordinate.column by -1) {
+			for ( i <- tile.coordinate.column until emptyTile.coordinate.column by -1) {
 				coordinate = new Coordinate(tile.coordinate.row, i)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
 				finalCoordinate = new Coordinate(tile.coordinate.row, i-1)
@@ -271,7 +270,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 				descriptors += motionDescriptor
 			}
 		} else if (tile.isToLeftOf(emptyTile)) {
-			for ( i <- tile.coordinate.column to emptyTile.coordinate.column ) {
+			for ( i <- tile.coordinate.column until emptyTile.coordinate.column ) {
 				coordinate = new Coordinate(tile.coordinate.row, i)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
 				finalCoordinate = new Coordinate(tile.coordinate.row, i+1)
@@ -290,7 +289,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 				descriptors += motionDescriptor
 			}
 		} else if (tile.isAbove(emptyTile)) {
-			for ( i <- tile.coordinate.row to emptyTile.coordinate.row ) {
+			for ( i <- tile.coordinate.row until emptyTile.coordinate.row ) {
 				coordinate = new Coordinate(i, tile.coordinate.column)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
 				finalCoordinate = new Coordinate(i+1, tile.coordinate.column) 
@@ -309,7 +308,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 				descriptors += motionDescriptor
 			}
 		} else if (tile.isBelow(emptyTile)) {
-			for ( i <- tile.coordinate.row to emptyTile.coordinate.row by -1 ) {
+			for ( i <- tile.coordinate.row until emptyTile.coordinate.row by -1 ) {
 				coordinate = new Coordinate(i, tile.coordinate.column)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
 				finalCoordinate = new Coordinate(i-1, tile.coordinate.column)
