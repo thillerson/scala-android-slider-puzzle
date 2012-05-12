@@ -42,8 +42,8 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 
   def this( context:Context, attrSet:AttributeSet ) {
     this( context, attrSet, 0 )
-   	val globe = getResources().getDrawable(R.drawable.globe);
-		val original = globe.asInstanceOf[BitmapDrawable].getBitmap();
+   	val img = getResources().getDrawable(R.drawable.globe);
+		val original = img.asInstanceOf[BitmapDrawable].getBitmap();
 		tileServer = new TileServer(original, 4, 4, 68);
   }
 
@@ -362,8 +362,8 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 	def determineGameboardSizes() {
 		var viewWidth = getWidth();
 		var viewHeight = getHeight();
-		// ostensibly tiles can be sized based on view geometry. Hardcode for now.
-		tileSize = new Size(68, 68);
+    val tileDimen = getResources().getDimension(R.dimen.tile_size)
+		tileSize = new Size(tileDimen.toInt, tileDimen.toInt);
 		var gameboardWidth = tileSize.width * 4;
 		var gameboardHeight = tileSize.height * 4;
 		var gameboardTop = viewHeight/2 - gameboardHeight/2;
