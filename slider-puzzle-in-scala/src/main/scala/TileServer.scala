@@ -1,44 +1,43 @@
 package com.tackmobile.scala.slider
 
-import java.util.ArrayList
-import java.util.HashSet
+import android.graphics.Bitmap
+import android.util.Log
+
 import java.util.Random
 
-import android.graphics.Bitmap
+import scala.collection.mutable.Set
+import scala.collection.mutable.ArrayBuffer
 
 class TileServer( original:Bitmap, rows:Int, columns:Int, tileSize:Int ) {
 
-  var scaledImage:Bitmap = null
-  val width:Int = 0
-  val unservedSlices:ArrayList[Bitmap] = new ArrayList[Bitmap]
-  val slices:HashSet[Bitmap] = new HashSet[Bitmap]
+  val unservedSlices:ArrayBuffer[Bitmap] = new ArrayBuffer[Bitmap]
+  val slices:Set[Bitmap] = Set()
   val random:Random = new Random
 
   sliceOriginal()
 
-  def sliceOriginal() {
+  def reset() = slices.foreach( slice => unservedSlices += slice )
+
+  private def sliceOriginal() {
     val fullWidth = tileSize * rows
 		val fullHeight = tileSize * columns
-		scaledImage = Bitmap.createScaledBitmap(original, fullWidth, fullHeight, true)
+		val scaledImage = Bitmap.createScaledBitmap(original, fullWidth, fullHeight, true)
 		
-    var x:Int = 0
-    var y:Int = 0
-		var bitmap:Bitmap = null
+    var bitmap:Bitmap = null
 		for (rowI <- 0 to 3; colI <- 0 to 3) {
-			x = rowI * tileSize
-			y = colI * tileSize
-			bitmap = Bitmap.createBitmap(scaledImage, x, y, tileSize, tileSize)
-			slices.add(bitmap)
+			slices += Bitmap.createBitmap(scaledImage, rowI * tileSize, colI * tileSize, tileSize, tileSize)
 		}
-		unservedSlices.addAll(slices)
+    reset()
   }
   
 	def serveRandomSlice():Bitmap = {
-		if (unservedSlices.size() > 0) {
-			val randomIndex = random.nextInt(unservedSlices.size())
-			val drawable = unservedSlices.remove(randomIndex)
+		if (unservedSlices.size > 0) {
+			val randomIndex = random.nextInt(unservedSlices.size)
+      val drawable = unservedSlices(randomIndex)
+			unservedSlices -= drawable
 			return drawable
 		}
     null
 	}
+
 }
