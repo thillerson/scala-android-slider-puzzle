@@ -160,7 +160,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 			}
 			
 			var candidateRectInGameboard = (gameboardRect.contains(candidateRect))
-			  var collides = candidateRectForTileCollidesWithAnyTileInSet(candidateRect, tile, tilesToCheck)
+			var collides = candidateRectForTileCollidesWithAnyTileInSet(candidateRect, tile, tilesToCheck)
 			
 			impossibleMove = impossibleMove && (!candidateRectInGameboard || collides)
 		}
@@ -340,23 +340,11 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 	}
 	
 	def allTilesInRow( row:Int ):HashSet[GameTile] = {
-		val tilesInRow = new HashSet[GameTile];
-		for (tile <- tiles) {
-			if (tile.coordinate.row == row) {
-				tilesInRow.add(tile);
-			}
-		}
-		return tilesInRow;
+    tiles.filter( tile => tile.coordinate.row == row )
 	}
 
 	def allTilesInColumn( column:Int ):HashSet[GameTile] = {
-		val tilesInColumn = new HashSet[GameTile];
-		for (tile <- tiles) {
-			if (tile.coordinate.column == column) {
-				tilesInColumn.add(tile);
-			}
-		}
-		return tilesInColumn;
+    tiles.filter( tile => tile.coordinate.column == column )
 	}
 
 	def determineGameboardSizes() {
