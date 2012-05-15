@@ -253,7 +253,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		if (tile.isToRightOf(emptyTile)) {
 			for ( i <- tile.coordinate.column until emptyTile.coordinate.column by -1) {
 				coordinate = new Coordinate(tile.coordinate.row, i)
-				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
+				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
 				finalCoordinate = new Coordinate(tile.coordinate.row, i-1)
 				currentRect = rectForCoordinate(foundTile.coordinate)
 				finalRect = rectForCoordinate(finalCoordinate)
@@ -272,7 +272,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		} else if (tile.isToLeftOf(emptyTile)) {
 			for ( i <- tile.coordinate.column until emptyTile.coordinate.column ) {
 				coordinate = new Coordinate(tile.coordinate.row, i)
-				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
+				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
 				finalCoordinate = new Coordinate(tile.coordinate.row, i+1)
 				currentRect = rectForCoordinate(foundTile.coordinate)
 				finalRect = rectForCoordinate(finalCoordinate)
@@ -291,7 +291,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		} else if (tile.isAbove(emptyTile)) {
 			for ( i <- tile.coordinate.row until emptyTile.coordinate.row ) {
 				coordinate = new Coordinate(i, tile.coordinate.column)
-				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
+				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
 				finalCoordinate = new Coordinate(i+1, tile.coordinate.column) 
 				currentRect = rectForCoordinate(foundTile.coordinate)
 				finalRect = rectForCoordinate(finalCoordinate)
@@ -310,7 +310,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		} else if (tile.isBelow(emptyTile)) {
 			for ( i <- tile.coordinate.row until emptyTile.coordinate.row by -1 ) {
 				coordinate = new Coordinate(i, tile.coordinate.column)
-				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate) 
+				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
 				finalCoordinate = new Coordinate(i-1, tile.coordinate.column)
 				currentRect = rectForCoordinate(foundTile.coordinate)
 				finalRect = rectForCoordinate(finalCoordinate)
@@ -330,22 +330,9 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		descriptors
 	}
 	
-	def getTileAtCoordinate( coordinate:Coordinate ):GameTile = {
-		for (tile <- tiles) {
-			if (tile.coordinate.matches(coordinate)) {
-				return tile;
-			}
-		}
-		return null;
-	}
-	
-	def allTilesInRow( row:Int ):HashSet[GameTile] = {
-    tiles.filter( tile => tile.coordinate.row == row )
-	}
-
-	def allTilesInColumn( column:Int ):HashSet[GameTile] = {
-    tiles.filter( tile => tile.coordinate.column == column )
-	}
+	def getTileAtCoordinate( coordinate:Coordinate ) = tiles.find( tile => tile.coordinate.matches(coordinate) )
+	def allTilesInRow( row:Int ) = tiles.filter( tile => tile.coordinate.row == row )
+	def allTilesInColumn( column:Int ) = tiles.filter( tile => tile.coordinate.column == column )
 
 	def determineGameboardSizes() {
 		var viewWidth = getWidth();
