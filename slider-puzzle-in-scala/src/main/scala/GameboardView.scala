@@ -97,7 +97,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 			} else {
 				if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
 					movedTile = touchedTile
-					currentMotionDescriptors = getTilesBetweenEmptyTileAndTile(movedTile)
+					currentMotionDescriptors = getMotionDescriptorsBetweenEmptyTileAndTile(movedTile)
 				} else if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
 					if (lastDragPoint != null) {
 						moveDraggedTilesByMotionEventDelta(event)
@@ -105,7 +105,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 					lastDragPoint = new PointF(event.getRawX(), event.getRawY())
 				} else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
 					// reload the motion descriptors in case of position change.
-					currentMotionDescriptors = getTilesBetweenEmptyTileAndTile(movedTile)
+					currentMotionDescriptors = getMotionDescriptorsBetweenEmptyTileAndTile(movedTile)
 					// if last move was a dragging move and the move was over half way to the empty tile
 					if (lastDragPoint != null && lastDragMovedAtLeastHalfWay()) {
 						animateCurrentMovedTilesToEmptySpace()
@@ -241,7 +241,7 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 		}
 	}
 
-	def getTilesBetweenEmptyTileAndTile( tile:GameTile ):ArrayBuffer[GameTileMotionDescriptor] = {
+	def getMotionDescriptorsBetweenEmptyTileAndTile( tile:GameTile ):ArrayBuffer[GameTileMotionDescriptor] = {
 		var descriptors = new ArrayBuffer[GameTileMotionDescriptor]
 		var coordinate:Coordinate = null
     var finalCoordinate:Coordinate = null
