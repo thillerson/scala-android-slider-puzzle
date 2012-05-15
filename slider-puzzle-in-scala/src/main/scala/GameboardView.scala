@@ -170,12 +170,10 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 				tile = gameTileMotionDescriptor.tile
 				dxTile = tile.getX() + dxEvent
 				dyTile = tile.getY() + dyEvent
-				if (!impossibleMove) {
-					if (tile.coordinate.row == emptyTile.coordinate.row) {
-						tile.setX(dxTile)
-					} else if (tile.coordinate.column == emptyTile.coordinate.column) {
-						tile.setY(dyTile)
-					}
+				if (tile.coordinate.row == emptyTile.coordinate.row) {
+					tile.setX(dxTile)
+				} else if (tile.coordinate.column == emptyTile.coordinate.column) {
+					tile.setY(dyTile)
 				}
 			}
 		}
@@ -244,115 +242,89 @@ class GameboardView( context:Context, attrSet:AttributeSet, defStyle:Int )
 	def getMotionDescriptorsBetweenEmptyTileAndTile( tile:GameTile ):ArrayBuffer[GameTileMotionDescriptor] = {
 		var descriptors = new ArrayBuffer[GameTileMotionDescriptor]
 		var coordinate:Coordinate = null
-    var finalCoordinate:Coordinate = null
 		var foundTile:GameTile = null
-		var motionDescriptor:GameTileMotionDescriptor = null
-		var finalRect:Rect = null
-    var currentRect:Rect = null
-		var axialDelta:Float = 0f
 		if (tile.isToRightOf(emptyTile)) {
 			for ( i <- tile.coordinate.column until emptyTile.coordinate.column by -1) {
 				coordinate = new Coordinate(tile.coordinate.row, i)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
-				finalCoordinate = new Coordinate(tile.coordinate.row, i-1)
-				currentRect = rectForCoordinate(foundTile.coordinate)
-				finalRect = rectForCoordinate(finalCoordinate)
-				axialDelta = Math.abs(foundTile.getX() - currentRect.left)
-				motionDescriptor = new GameTileMotionDescriptor(
-					foundTile,
-					"x",
-					foundTile.getX(),
-					finalRect.left
-				)
-				motionDescriptor.finalCoordinate = finalCoordinate
-				motionDescriptor.finalRect = finalRect
-				motionDescriptor.axialDelta = axialDelta
-				descriptors += motionDescriptor
+        descriptors += createMotionDescriptorForMovedTile( foundTile, "x", i-1 )
 			}
 		} else if (tile.isToLeftOf(emptyTile)) {
 			for ( i <- tile.coordinate.column until emptyTile.coordinate.column ) {
 				coordinate = new Coordinate(tile.coordinate.row, i)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
-				finalCoordinate = new Coordinate(tile.coordinate.row, i+1)
-				currentRect = rectForCoordinate(foundTile.coordinate)
-				finalRect = rectForCoordinate(finalCoordinate)
-				axialDelta = Math.abs(foundTile.getX() - currentRect.left)
-				motionDescriptor = new GameTileMotionDescriptor(
-					foundTile,
-					"x",
-					foundTile.getX(),
-					finalRect.left
-				)
-				motionDescriptor.finalCoordinate = finalCoordinate
-				motionDescriptor.finalRect = finalRect
-				motionDescriptor.axialDelta = axialDelta
-				descriptors += motionDescriptor
+        descriptors += createMotionDescriptorForMovedTile( foundTile, "x", i+1 )
 			}
 		} else if (tile.isAbove(emptyTile)) {
 			for ( i <- tile.coordinate.row until emptyTile.coordinate.row ) {
 				coordinate = new Coordinate(i, tile.coordinate.column)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
-				finalCoordinate = new Coordinate(i+1, tile.coordinate.column) 
-				currentRect = rectForCoordinate(foundTile.coordinate)
-				finalRect = rectForCoordinate(finalCoordinate)
-				axialDelta = Math.abs(foundTile.getY() - currentRect.top)
-				motionDescriptor = new GameTileMotionDescriptor(
-					foundTile,
-					"y",
-					foundTile.getY(),
-					finalRect.top
-				)
-				motionDescriptor.finalCoordinate = finalCoordinate
-				motionDescriptor.finalRect = finalRect
-				motionDescriptor.axialDelta = axialDelta
-				descriptors += motionDescriptor
+        descriptors += createMotionDescriptorForMovedTile( foundTile, "y", i+1 )
 			}
 		} else if (tile.isBelow(emptyTile)) {
 			for ( i <- tile.coordinate.row until emptyTile.coordinate.row by -1 ) {
 				coordinate = new Coordinate(i, tile.coordinate.column)
 				foundTile = if (tile.coordinate.matches(coordinate)) tile else getTileAtCoordinate(coordinate).get
-				finalCoordinate = new Coordinate(i-1, tile.coordinate.column)
-				currentRect = rectForCoordinate(foundTile.coordinate)
-				finalRect = rectForCoordinate(finalCoordinate)
-				axialDelta = Math.abs(foundTile.getY() - currentRect.top)
-				motionDescriptor = new GameTileMotionDescriptor(
-					foundTile,
-					"y",
-					foundTile.getY(),
-					finalRect.top
-				)
-				motionDescriptor.finalCoordinate = finalCoordinate
-				motionDescriptor.finalRect = finalRect
-				motionDescriptor.axialDelta = axialDelta
-				descriptors += motionDescriptor
+        descriptors += createMotionDescriptorForMovedTile( foundTile, "y", i-1 )
 			}
 		}
 		descriptors
 	}
+
+  def createMotionDescriptorForMovedTile( tile:GameTile, axis:String, coordinateChange:Int ):GameTileMotionDescriptor = {
+		val currentRect = rectForCoordinate(tile.coordinate)
+    val finalCoordinate = axis match {
+      case "x" => new Coordinate( tile.coordinate.row, coordinateChange )
+      case "y" => new Coordinate( coordinateChange, tile.coordinate.column )
+    }
+		val finalRect = rectForCoordinate(finalCoordinate)
+    val currentPositionOnAxis = axis match {
+      case "x" => tile.getX()
+      case "y" => tile.getY()
+    }
+    val finalPositionOnAxis = axis match {
+      case "x" => finalRect.left
+      case "y" => finalRect.top
+    }
+		val axialDelta = Math.abs( axis match {
+      case "x" => tile.getX() - currentRect.left
+      case "y" => tile.getY() - currentRect.top
+    })
+		val motionDescriptor = new GameTileMotionDescriptor(
+			tile,
+      axis,
+      currentPositionOnAxis,
+      finalPositionOnAxis,
+      axialDelta,
+      finalRect,
+      finalCoordinate
+		)
+    return motionDescriptor
+  }
 	
 	def getTileAtCoordinate( coordinate:Coordinate ) = tiles.find( tile => tile.coordinate.matches(coordinate) )
 	def allTilesInRow( row:Int ) = tiles.filter( tile => tile.coordinate.row == row )
 	def allTilesInColumn( column:Int ) = tiles.filter( tile => tile.coordinate.column == column )
 
 	def determineGameboardSizes() {
-		var viewWidth = getWidth();
-		var viewHeight = getHeight();
+		var viewWidth = getWidth()
+		var viewHeight = getHeight()
     val tileDimen = getResources().getDimension(R.dimen.tile_size)
-		tileSize = new Size(tileDimen.toInt, tileDimen.toInt);
-		var gameboardWidth = tileSize.width * 4;
-		var gameboardHeight = tileSize.height * 4;
-		var gameboardTop = viewHeight/2 - gameboardHeight/2;
-		var gameboardLeft = viewWidth/2 - gameboardWidth/2;
-		gameboardRect = new RectF(gameboardLeft, gameboardTop, gameboardLeft + gameboardWidth, gameboardTop + gameboardHeight);
-		createTiles();
+		tileSize = new Size(tileDimen.toInt, tileDimen.toInt)
+		var gameboardWidth = tileSize.width * 4
+		var gameboardHeight = tileSize.height * 4
+		var gameboardTop = viewHeight/2 - gameboardHeight/2
+		var gameboardLeft = viewWidth/2 - gameboardWidth/2
+		gameboardRect = new RectF(gameboardLeft, gameboardTop, gameboardLeft + gameboardWidth, gameboardTop + gameboardHeight)
+		createTiles()
 	}
 
 	def rectForCoordinate( coordinate:Coordinate ):Rect = {
-		var gameboardY = Math.floor(gameboardRect.top);
-		var gameboardX = Math.floor(gameboardRect.left);
-		var top = (coordinate.row * tileSize.height) + gameboardY;
-		var left = (coordinate.column * tileSize.width) + gameboardX;
-		return new Rect(left.toInt, top.toInt, left.toInt + tileSize.width, top.toInt + tileSize.height);
+		var gameboardY = Math.floor(gameboardRect.top)
+		var gameboardX = Math.floor(gameboardRect.left)
+		var top = (coordinate.row * tileSize.height) + gameboardY
+		var left = (coordinate.column * tileSize.width) + gameboardX
+		return new Rect(left.toInt, top.toInt, left.toInt + tileSize.width, top.toInt + tileSize.height)
 	}
 
 }
@@ -380,11 +352,11 @@ object GameboardView {
                                  var property:String,
                                  var from:Float,
                                  var to:Float,
-                                 var axialDelta:Float = 0,
-                                 var coordinate:Coordinate = null
+                                 var axialDelta:Float,
+                                 var finalRect:Rect,
+                                 var finalCoordinate:Coordinate
                                ) {
-    var finalRect:Rect = null
-    var finalCoordinate:Coordinate = null
+    var coordinate:Coordinate = null
 
 		def currentPosition():Double = {
 			if (property.equals("x")) {
